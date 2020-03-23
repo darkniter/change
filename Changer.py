@@ -59,7 +59,7 @@ def hardware_init(fname, sheet):
             cols[init.column-1] = str(init.value)
 
             if (((init.column == 10) or (init.column == 11)) and
-               (init.value is not None)):
+                    (init.value is not None)):
                 cols[init.column-1] = str(init.value).split(' ')[0]
             if (((init.column == 1) or (init.column == 2)) and (init.font.strike is True)):
                 cols[19] = 1
@@ -82,28 +82,21 @@ def result_init(arg):
     print("hardware", len(_result))
     _result, _err = error_module(_result,  town)
     print("result:", len(_result))
-    return {'result':_result, 'err':_err,}
+    return {'result': _result, 'err': _err, }
 
 
 @timecall
 def out_file(result, namefile):
-    result = [x for i,x in enumerate(result) if not x is None]
-
+    result = [x for i, x in enumerate(result) if not x is None]
 
     # try:
     if path.isfile(config.DIR + namefile + '.csv'):
         remove(config.DIR + namefile + '.csv')
-    with open(
-
-                config.DIR + namefile + '.csv',
-                'a+',
-                newline=''
-
-            ) as newfile:
-
+    with open(config.DIR + namefile + '.csv', 'w+', newline='', encoding='utf-8-sig') as newfile:
         scvwr = csv.writer(newfile, delimiter=';', quoting=csv.QUOTE_MINIMAL)
 
         scvwr.writerows(result)
+
 
 def format_founded(excel_lost, map_found, address):
     if address[0] == 'P_STREET':
@@ -117,7 +110,7 @@ def format_founded(excel_lost, map_found, address):
         founded_address = map_found[item]['hardware']
         if address[0] == founded_address[0] and address[1] == founded_address[1]:
             address_tmp = address[4].split(';')
-            if (address[3]==item or item in address_tmp):
+            if (address[3] == item or item in address_tmp):
                 address = founded_address
                 if address[7].find('\n') != -1:
                     address[7] = "|".join(address[7].split('\n'))
@@ -128,47 +121,46 @@ def format_founded(excel_lost, map_found, address):
         return False
 
 
-
 def regions_worker(reg_list, flag_mod=''):
     _err = []
 
     _result = [['P_STREET', 'P_HOUSE', 'P_MODEL', 'P_IP_OLD', 'P_IP',
-            'P_VECTOR', 'P_UPLINK', 'P_MAC', 'P_VLAN', 'P_DATE_SETUP',
-            'P_DATE_INSTALL', 'P_FLATS', 'P_DOOR', 'P_FLOOR',
-            'P_DESCRIPTION', 'P_RESERVED1', 'P_RESERVED2', 'P_RESERVED3',
-            'P_TRANSIT', 'P_REMOVED',]]
+                'P_VECTOR', 'P_UPLINK', 'P_MAC', 'P_VLAN', 'P_DATE_SETUP',
+                'P_DATE_INSTALL', 'P_FLATS', 'P_DOOR', 'P_FLOOR',
+                'P_DESCRIPTION', 'P_RESERVED1', 'P_RESERVED2', 'P_RESERVED3',
+                'P_TRANSIT', 'P_REMOVED', ]]
 
-    output_init = list(map(result_init,reg_list))
+    output_init = list(map(result_init, reg_list))
 
     for item in output_init:
-        _result+=(item['result'])
-        _err+=(item['err'])
+        _result += (item['result'])
+        _err += (item['err'])
 
     for i, d in enumerate(_result):
         if d is None:
-            print (i)
+            print(i)
 
     map_not_found, found = check_changer()
-    _result = [x for i,x in enumerate(_result) if x is not None]
+    _result = [x for i, x in enumerate(_result) if x is not None]
     format_founded_tmp = partial(format_founded, map_not_found, found)
 
     _result = list(map(format_founded_tmp, _result))
 
-    _removed = [x for i,x in enumerate(_err) if x[19] == 1]
+    _removed = [x for i, x in enumerate(_err) if x[19] == 1]
 
-    _result = [x for i,x in enumerate(_result) if x ]
+    _result = [x for i, x in enumerate(_result) if x]
 
-    _err = [x for i,x in enumerate(_err) if x[19] is None]
+    _err = [x for i, x in enumerate(_err) if x[19] is None]
 
     _err = list(map(format_founded_tmp, _err))
 
-    _err = [x for i,x in enumerate(_err) if x ]
+    _err = [x for i, x in enumerate(_err) if x]
 
-    _err.insert(0,['P_STREET', 'P_HOUSE', 'P_MODEL', 'P_IP_OLD', 'P_IP',
-            'P_VECTOR', 'P_UPLINK', 'P_MAC', 'P_VLAN', 'P_DATE_SETUP',
-            'P_DATE_INSTALL', 'P_FLATS', 'P_DOOR', 'P_FLOOR',
-            'P_DESCRIPTION', 'P_RESERVED1', 'P_RESERVED2', 'P_RESERVED3',
-            'P_TRANSIT', 'P_REMOVED',])
+    _err.insert(0, ['P_STREET', 'P_HOUSE', 'P_MODEL', 'P_IP_OLD', 'P_IP',
+                    'P_VECTOR', 'P_UPLINK', 'P_MAC', 'P_VLAN', 'P_DATE_SETUP',
+                    'P_DATE_INSTALL', 'P_FLATS', 'P_DOOR', 'P_FLOOR',
+                    'P_DESCRIPTION', 'P_RESERVED1', 'P_RESERVED2', 'P_RESERVED3',
+                    'P_TRANSIT', 'P_REMOVED', ])
 
     out_file(_removed, 'Removed' + flag_mod)
     out_file(_result, 'Result' + flag_mod)
@@ -203,8 +195,7 @@ def main():
             ],
         ],
 
-        )
-
+    )
 
     # regions_worker(
     #     [[
